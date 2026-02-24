@@ -1,3 +1,5 @@
+""" Filtering/sorting parameters are defined here
+"""
 import enum
 from marshmallow import Schema, fields
 

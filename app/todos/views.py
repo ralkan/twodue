@@ -5,7 +5,11 @@ bp = Blueprint('todos', __name__, url_prefix="/todos", description="Todo API")
 
 from app import db
 from app.models import Todo
-from app.todos.schemas import TodoCreateRequestSchema, TodoSchema, ListTodosSchema
+from app.todos.schemas import (
+    TodoCreateRequestSchema,
+    TodoUpdateRequestSchema,
+    TodoSchema,
+    ListTodosSchema)
 from app.todos.filters import ListTodosParameters
 
 
@@ -14,13 +18,17 @@ class TodoListView(MethodView):
     @bp.arguments(ListTodosParameters, location="query")
     @bp.response(status_code=200, schema=ListTodosSchema)
     def get(self, parameters):
-        # TODO: order by
+        """ List all Todos
+        """
+        # TODO: order by and pagination
         todos = Todo.query.all()
         return {"todos": todos}
 
     @bp.arguments(TodoCreateRequestSchema)
     @bp.response(status_code=201, schema=TodoSchema)
     def post(self, todo_data):
+        """ Create a new Todo
+        """
         todo = Todo(**todo_data)
         db.session.add(todo)
         db.session.commit()
@@ -31,12 +39,16 @@ class TodoListView(MethodView):
 class TodoView(MethodView):
     @bp.response(status_code=200, schema=TodoSchema)
     def get(self, todo_id):
+        """ Get a single Todo
+        """
         todo = Todo.query.get_or_404(todo_id)
         return todo
 
-    @bp.arguments(TodoCreateRequestSchema)
+    @bp.arguments(TodoUpdateRequestSchema)
     @bp.response(status_code=200, schema=TodoSchema)
     def put(self, payload, todo_id):
+        """ Update existing Todo
+        """
         todo = Todo.query.get_or_404(todo_id)
         todo.done = payload.get('done', todo.done)
         todo.content = payload.get('content', todo.content)
@@ -45,6 +57,8 @@ class TodoView(MethodView):
 
     @bp.response(status_code=204)
     def delete(self, todo_id):
+        """ Delete a Todo
+        """
         todo = Todo.query.get_or_404(todo_id)
         db.session.delete(todo)
         db.session.commit()
