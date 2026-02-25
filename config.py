@@ -18,6 +18,14 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
 
+    # Azure specific config
+    # Set to False for assessment. Don't use this since it requires some setup in Azure
+    USE_AZURE_SECRET = False
+    # USE_AZURE_SECRET = True
+    KEY_VAULT_NAME = os.environ.get('KEY_VAULT_NAME') or "twodue-mi-kv"
+    SECRET_NAME = os.environ.get('SECRET_NAME') or "SECRETKEY"
+    KV_URI = f"https://{KEY_VAULT_NAME}.vault.azure.net/"
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
@@ -29,6 +37,10 @@ class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
         'sqlite://'
+
+    # Azure specific config
+    # Disable Azure Key Vault for testing due to slowing down tests
+    USE_AZURE_SECRET = False
 
 
 config = {

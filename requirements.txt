@@ -7,3 +7,5 @@ flask-smorest==0.46.2
 flask-marshmallow==1.4.0
 marshmallow-sqlalchemy==1.4.2
 PyJWT==2.11.0
+azure-identity==1.25.2
+azure-keyvault-secrets==4.10.0
