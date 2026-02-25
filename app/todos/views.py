@@ -1,6 +1,7 @@
 from flask import current_app, request
 from flask.views import MethodView
 from flask_smorest import Blueprint
+from sqlalchemy import asc, desc
 
 bp = Blueprint('todos', __name__, url_prefix="/todos", description="Todo API")
 
@@ -25,9 +26,11 @@ class TodoListView(UserTodoVisibilityMixin, MethodView):
     def get(self, parameters):
         """ List all Todos
         """
-        # TODO: order by
         page = parameters['page']
-        stmt = self.get_query()
+        order_by = parameters['order_by']
+        order_func = asc if parameters['order'].value == 'asc' else desc
+
+        stmt = self.get_query().order_by(order_func(order_by.value))
 
         if 'search' in parameters:
             stmt = stmt.filter(Todo.content.like("{}%".format(parameters['search'])))

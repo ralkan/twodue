@@ -14,6 +14,8 @@ from app.auth.schemas import RegisterRequestSchema, UserSchema, LoginRequestSche
 @bp.arguments(RegisterRequestSchema)
 @bp.response(status_code=201, schema=UserSchema)
 def register(user_schema):
+    """ Register a new user
+    """
     name = user_schema['name']
     email = user_schema['email']
     password = user_schema['password']
@@ -35,6 +37,8 @@ def register(user_schema):
 @bp.arguments(LoginRequestSchema)
 @bp.response(status_code=201, schema=UserSchema)
 def login(user_schema):
+    """ Login endpoint for receiving a JWT token
+    """
     email = user_schema['email']
     password = user_schema['password']
 

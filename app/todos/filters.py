@@ -6,6 +6,7 @@ from marshmallow import Schema, fields
 
 class SortByEnum(enum.Enum):
     id = "id"
+    content = "content"
     done = "done"
 
 

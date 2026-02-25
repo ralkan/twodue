@@ -1,13 +1,17 @@
 from functools import wraps
 
 import jwt
-from flask import request, jsonify, current_app
+from flask import request, jsonify
 
 from app.models import User
 from app.auth.helpers import decode_jwt_token
 
 
 def token_required(f):
+    """
+    Decorator for checking token in the header and returning early if a token was not found or it's expired.
+    If a valid token AND a user was found, add the user to the request object to be used in the views.
+    """
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization')

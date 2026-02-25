@@ -6,6 +6,7 @@ from app import db
 
 
 class Todo(db.Model):
+    # Use UUID but keep Int for assessment simplicity
     id: Mapped[int] = mapped_column(primary_key=True)
     content: Mapped[str] = mapped_column(String(255), index=True)
     done: Mapped[bool] = mapped_column(Boolean(), default=False)
@@ -17,6 +18,7 @@ class Todo(db.Model):
 
 
 class User(db.Model):
+    # Use UUID but keep Int for assessment simplicity
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100))
     email: Mapped[str] = mapped_column(String(100), unique=True)

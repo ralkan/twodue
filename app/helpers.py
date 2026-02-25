@@ -2,6 +2,8 @@ from flask import url_for
 
 
 def add_pagination_to_response(response, route, pagination_object):
+    """ Adding some pagination metadata to the response
+    """
     if pagination_object.has_next:
         response['next'] = url_for(route, page=pagination_object.next_num)
     if pagination_object.has_prev:
