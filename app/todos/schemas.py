@@ -1,4 +1,4 @@
-""" Request and Response schema's (serializers) are defined here
+""" Request and Response schema's (serializers) for Todos are defined here
 """
 from marshmallow import Schema, fields, validates_schema, ValidationError
 

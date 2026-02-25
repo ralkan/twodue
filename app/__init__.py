@@ -9,6 +9,7 @@ db = SQLAlchemy()
 ma = Marshmallow()
 api = Api()
 
+from app.auth.views import bp as auth_bp
 from app.todos.views import bp as todos_bp
 
 def create_app(env):
@@ -19,6 +20,7 @@ def create_app(env):
     ma.init_app(app)
     api.init_app(app)
 
+    api.register_blueprint(auth_bp)
     api.register_blueprint(todos_bp)
 
     return app

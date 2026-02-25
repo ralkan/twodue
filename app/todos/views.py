@@ -5,6 +5,7 @@ from flask_smorest import Blueprint
 bp = Blueprint('todos', __name__, url_prefix="/todos", description="Todo API")
 
 from app import db
+from app.decorators import token_required
 from app.helpers import add_pagination_to_response
 from app.models import Todo
 from app.todos.schemas import (
@@ -19,6 +20,7 @@ from app.todos.filters import ListTodosParameters
 class TodoListView(MethodView):
     @bp.arguments(ListTodosParameters, location="query")
     @bp.response(status_code=200, schema=ListTodosSchema)
+    @token_required
     def get(self, parameters):
         """ List all Todos
         """
@@ -36,6 +38,7 @@ class TodoListView(MethodView):
 
     @bp.arguments(TodoCreateRequestSchema)
     @bp.response(status_code=201, schema=TodoSchema)
+    @token_required
     def post(self, todo_data):
         """ Create a new Todo
         """
@@ -48,6 +51,7 @@ class TodoListView(MethodView):
 @bp.route("/<int:todo_id>")
 class TodoView(MethodView):
     @bp.response(status_code=200, schema=TodoSchema)
+    @token_required
     def get(self, todo_id):
         """ Get a single Todo
         """
@@ -56,6 +60,7 @@ class TodoView(MethodView):
 
     @bp.arguments(TodoUpdateRequestSchema)
     @bp.response(status_code=200, schema=TodoSchema)
+    @token_required
     def put(self, payload, todo_id):
         """ Update existing Todo
         """
@@ -66,6 +71,7 @@ class TodoView(MethodView):
         return todo
 
     @bp.response(status_code=204)
+    @token_required
     def delete(self, todo_id):
         """ Delete a Todo
         """

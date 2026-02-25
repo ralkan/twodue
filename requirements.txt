@@ -6,3 +6,4 @@ Flask-Migrate==4.1.0
 flask-smorest==0.46.2
 flask-marshmallow==1.4.0
 marshmallow-sqlalchemy==1.4.2
+PyJWT==2.11.0
