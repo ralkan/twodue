@@ -62,12 +62,26 @@ def user(app):
 
 
 @pytest.fixture()
-def todos(app):
+def otheruser(app):
     with app.app_context():
-        todo1 = Todo(content="Milk")
-        todo2 = Todo(content="Cheese")
-        todo3 = Todo(content="Coffee")
+        hashed_password = generate_password_hash(USER_PASS)
+        user = User(email="temp@user.com", name="Test User 2", password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+    return user
+
+
+@pytest.fixture()
+def todos(app, user, otheruser):
+    with app.app_context():
+        todo1 = Todo(content="Milk", user=user)
+        todo2 = Todo(content="Cheese", user=user)
+        todo3 = Todo(content="Coffee", user=user)
+
+        # TODO: Add tests for user todos to see if users only see their own todos
+        todo4 = Todo(content="Goat Cheese", user=otheruser)
         db.session.add(todo1)
         db.session.add(todo2)
         db.session.add(todo3)
+        db.session.add(todo4)
         db.session.commit()

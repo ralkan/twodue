@@ -29,7 +29,7 @@ def token_required(f):
 
         if not current_user:
             return jsonify({'message': 'Token is invalid!'}), 401
-        current_app.user = current_user
+        request.user = current_user
 
         return f(*args, **kwargs)
 

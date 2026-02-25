@@ -1,4 +1,4 @@
-from flask import current_app
+from flask import current_app, request
 from flask.views import MethodView
 from flask_smorest import Blueprint
 
@@ -8,6 +8,7 @@ from app import db
 from app.decorators import token_required
 from app.helpers import add_pagination_to_response
 from app.models import Todo
+from app.todos.mixins import UserTodoVisibilityMixin
 from app.todos.schemas import (
     TodoCreateRequestSchema,
     TodoUpdateRequestSchema,
@@ -17,7 +18,7 @@ from app.todos.filters import ListTodosParameters
 
 
 @bp.route("/")
-class TodoListView(MethodView):
+class TodoListView(UserTodoVisibilityMixin, MethodView):
     @bp.arguments(ListTodosParameters, location="query")
     @bp.response(status_code=200, schema=ListTodosSchema)
     @token_required
@@ -26,7 +27,7 @@ class TodoListView(MethodView):
         """
         # TODO: order by
         page = parameters['page']
-        stmt = db.select(Todo)
+        stmt = self.get_query()
 
         if 'search' in parameters:
             stmt = stmt.filter(Todo.content.like("{}%".format(parameters['search'])))
@@ -42,20 +43,20 @@ class TodoListView(MethodView):
     def post(self, todo_data):
         """ Create a new Todo
         """
-        todo = Todo(**todo_data)
+        todo = Todo(**todo_data, user=request.user)
         db.session.add(todo)
         db.session.commit()
         return todo
 
 
 @bp.route("/<int:todo_id>")
-class TodoView(MethodView):
+class TodoView(UserTodoVisibilityMixin, MethodView):
     @bp.response(status_code=200, schema=TodoSchema)
     @token_required
     def get(self, todo_id):
         """ Get a single Todo
         """
-        todo = Todo.query.get_or_404(todo_id)
+        todo = self.get_todo_or_404(todo_id)
         return todo
 
     @bp.arguments(TodoUpdateRequestSchema)
@@ -64,7 +65,7 @@ class TodoView(MethodView):
     def put(self, payload, todo_id):
         """ Update existing Todo
         """
-        todo = Todo.query.get_or_404(todo_id)
+        todo = self.get_todo_or_404(todo_id)
         todo.done = payload.get('done', todo.done)
         todo.content = payload.get('content', todo.content)
         db.session.commit()
@@ -75,6 +76,6 @@ class TodoView(MethodView):
     def delete(self, todo_id):
         """ Delete a Todo
         """
-        todo = Todo.query.get_or_404(todo_id)
+        todo = self.get_todo_or_404(todo_id)
         db.session.delete(todo)
         db.session.commit()

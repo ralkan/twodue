@@ -1,3 +1,8 @@
+# TODO: Test search functionality
+# TODO: Test pagination
+# TODO: Test sort/ordering
+
+
 def _get_and_assert_todo_3(client):
     """ Function to test single todo with id 3
     """
@@ -56,7 +61,7 @@ def test_create_todo(auth_client, todos):
     assert post_response.json['content'] == 'Bread'
     # Check if the id has incremented as expected
     # (This might change or be removed when we use uuid's)
-    assert post_response.json['id'] == 4
+    assert post_response.json['id'] == 5
 
     response = auth_client.get('/todos/')
     assert response.status_code == 200
