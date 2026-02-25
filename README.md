@@ -4,6 +4,8 @@ Your go-to ToDo application to do your due too!
 
 A REST API built with Flask for managing todos with user authentication, pagination, sorting, and search.
 
+Please also check the PR for [**api-v2**](https://github.com/ralkan/twodue/pull/1)
+
 ## Tech Stack
 
 - **Flask** — Web framework
