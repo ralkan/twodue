@@ -3,14 +3,14 @@ from flask.views import MethodView
 from flask_smorest import Blueprint
 from sqlalchemy import asc, desc
 
-bp = Blueprint('todos', __name__, url_prefix="/todos", description="Todo API")
+bp = Blueprint('todos', __name__, url_prefix="/api/v2/todos", description="Todo API")
 
 from app import db
 from app.decorators import token_required
 from app.helpers import add_pagination_to_response
 from app.models import Todo
 from app.todos.mixins import UserTodoVisibilityMixin
-from app.todos.schemas import (
+from app.todos.api.v2.schemas import (
     TodoCreateRequestSchema,
     TodoUpdateRequestSchema,
     TodoSchema,
