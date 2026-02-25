@@ -26,17 +26,24 @@ class TodoListView(UserTodoVisibilityMixin, MethodView):
     def get(self, parameters):
         """ List all Todos
         """
+        # Get the page=x querystring for pagination
         page = parameters['page']
+        # Get the order by (content, id, done) for sorting
         order_by = parameters['order_by']
+        # Get the sorting order (asc or desc) and use the appropriate functions
         order_func = asc if parameters['order'].value == 'asc' else desc
 
+        # Prepare the stmt but don't run it yet
         stmt = self.get_query().order_by(order_func(order_by.value))
 
+        # If we have a '?search=<str>' add a where clause for searching content
         if 'search' in parameters:
             stmt = stmt.filter(Todo.content.like("{}%".format(parameters['search'])))
 
+        # Paginate the response (Maybe use flask-smorest pagination?)
         todos = db.paginate(stmt, page=page, per_page=current_app.config['DEFAULT_PAGINATION_COUNT'], error_out=False)
 
+        # Add next, prev, total_pages and total_records metadata to the response
         response = add_pagination_to_response({"todos": todos}, 'todos.TodoListView', todos)
         return response
 
@@ -46,6 +53,7 @@ class TodoListView(UserTodoVisibilityMixin, MethodView):
     def post(self, todo_data):
         """ Create a new Todo
         """
+        # Create the todo and assign it to the current user
         todo = Todo(**todo_data, user=request.user)
         db.session.add(todo)
         db.session.commit()
@@ -69,8 +77,12 @@ class TodoView(UserTodoVisibilityMixin, MethodView):
         """ Update existing Todo
         """
         todo = self.get_todo_or_404(todo_id)
+
+        # Update "done" if it's in the request otherwise fallback to the current value
         todo.done = payload.get('done', todo.done)
+        # Update "content" if it's in the request otherwise fallback to the current value
         todo.content = payload.get('content', todo.content)
+
         db.session.commit()
         return todo
 

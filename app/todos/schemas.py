@@ -14,6 +14,7 @@ class TodoUpdateRequestSchema(TodoCreateRequestSchema):
 
     @validates_schema
     def validate_all_fields(self, data, **kwargs):
+        # Validate both content and done values as we need at least one of the two in the request body
         if not data:
             raise ValidationError('At least one of the parameters "content" or "done" should be provided')
 
