@@ -4,6 +4,7 @@ import jwt
 from flask import request, jsonify, current_app
 
 from app.models import User
+from app.auth.helpers import decode_jwt_token
 
 
 def token_required(f):
@@ -19,13 +20,15 @@ def token_required(f):
             return jsonify({'message': 'Token formatted incorrectly!'}), 401
 
         try:
-            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
+            data = decode_jwt_token(token)
             current_user = User.query.filter_by(id=data['id']).first()
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired!'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'message': 'Token is invalid!'}), 401
 
+        if not current_user:
+            return jsonify({'message': 'Token is invalid!'}), 401
         current_app.user = current_user
 
         return f(*args, **kwargs)

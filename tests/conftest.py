@@ -1,7 +1,32 @@
 import pytest
 
+from flask.testing import FlaskClient
+from werkzeug.security import generate_password_hash
+
 from app import create_app, db
-from app.models import Todo
+from app.models import Todo, User
+
+
+USER_EMAIL = "me@test.com"
+USER_PASS = "abc123"
+
+
+class AuthFlaskClient(FlaskClient):
+    """
+    Custom Auth test client class that retrieves a token
+    and automatically adds it to the header for each request.
+    """
+    _token = None
+
+    def open(self, *args, **kwargs):
+        if 'login' not in args[0] and self._token is None:
+            self.get_token()
+        kwargs.setdefault('headers', {'Authorization': f'Bearer {self._token}'})
+        return super().open(*args, **kwargs)
+
+    def get_token(self):
+        response = self.post('/auth/login', json={"email": USER_EMAIL, "password": USER_PASS})
+        self._token = response.json['token']
 
 
 @pytest.fixture()
@@ -17,6 +42,23 @@ def app():
 @pytest.fixture()
 def client(app):
     return app.test_client()
+
+
+@pytest.fixture()
+def auth_client(app, user):
+    app.test_client_class = AuthFlaskClient
+    test_client = app.test_client()
+    return test_client
+
+
+@pytest.fixture()
+def user(app):
+    with app.app_context():
+        hashed_password = generate_password_hash(USER_PASS)
+        user = User(email=USER_EMAIL, name="Test User 1", password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+    return user
 
 
 @pytest.fixture()

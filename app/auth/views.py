@@ -1,7 +1,4 @@
-from datetime import timezone, datetime, timedelta
-
-import jwt
-from flask import abort, current_app
+from flask import abort
 from flask_smorest import Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -9,6 +6,7 @@ bp = Blueprint('auth', __name__, url_prefix="/auth", description="Auth API")
 
 from app import db
 from app.models import User
+from app.auth.helpers import create_jwt_token
 from app.auth.schemas import RegisterRequestSchema, UserSchema, LoginRequestSchema
 
 
@@ -45,8 +43,6 @@ def login(user_schema):
     if not user or not check_password_hash(user.password, password):
         return {'message': 'Invalid email or password'}, 401
 
-    token = jwt.encode(
-        {'id': user.id, 'exp': datetime.now(timezone.utc) + timedelta(hours=1)},
-        current_app.config['SECRET_KEY'], algorithm="HS256")
+    token = create_jwt_token(user)
 
     return {**UserSchema().dump(user), 'token': token}
