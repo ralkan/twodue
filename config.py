@@ -6,6 +6,7 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 
 class Config:
+    DEFAULT_PAGINATION_COUNT = int(os.environ.get("DEFAULT_PAGINATION_COUNT")) or 2
     API_TITLE = os.environ.get('API_TITLE') or 'TwoDue'
     API_VERSION = 'v1'
     OPENAPI_VERSION = '3.0.3'

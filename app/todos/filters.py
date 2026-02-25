@@ -15,5 +15,7 @@ class SortDirectionEnum(enum.Enum):
 
 
 class ListTodosParameters(Schema):
+    search = fields.Str(required=False)
+    page = fields.Int(load_default=1)
     order_by = fields.Enum(SortByEnum, load_default=SortByEnum.id)
     order = fields.Enum(SortDirectionEnum, load_default=SortDirectionEnum.asc)

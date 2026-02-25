@@ -23,4 +23,8 @@ class TodoSchema(TodoCreateRequestSchema):
 
 
 class ListTodosSchema(Schema):
+    total_records = fields.Int(required=False)
+    total_pages = fields.Int(required=False)
+    next = fields.Str(required=False)
+    prev = fields.Str(required=False)
     todos = fields.List(fields.Nested(TodoSchema))

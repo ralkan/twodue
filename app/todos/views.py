@@ -1,9 +1,11 @@
+from flask import current_app
 from flask.views import MethodView
 from flask_smorest import Blueprint
 
 bp = Blueprint('todos', __name__, url_prefix="/todos", description="Todo API")
 
 from app import db
+from app.helpers import add_pagination_to_response
 from app.models import Todo
 from app.todos.schemas import (
     TodoCreateRequestSchema,
@@ -20,9 +22,17 @@ class TodoListView(MethodView):
     def get(self, parameters):
         """ List all Todos
         """
-        # TODO: order by and pagination
-        todos = Todo.query.all()
-        return {"todos": todos}
+        # TODO: order by
+        page = parameters['page']
+        stmt = db.select(Todo)
+
+        if 'search' in parameters:
+            stmt = stmt.filter(Todo.content.like("{}%".format(parameters['search'])))
+
+        todos = db.paginate(stmt, page=page, per_page=current_app.config['DEFAULT_PAGINATION_COUNT'], error_out=False)
+
+        response = add_pagination_to_response({"todos": todos}, 'todos.TodoListView', todos)
+        return response
 
     @bp.arguments(TodoCreateRequestSchema)
     @bp.response(status_code=201, schema=TodoSchema)
