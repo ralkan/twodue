@@ -26,6 +26,7 @@ twodue/
 │   ├── models.py            # User and Todo models
 │   ├── decorators.py        # JWT token_required decorator
 │   ├── helpers.py           # Pagination helper
+│   ├── utils.py             # AzureKeyVaultClient util class
 │   ├── auth/
 │   │   ├── views.py         # Register and login endpoints
 │   │   ├── schemas.py       # Auth request/response schemas
