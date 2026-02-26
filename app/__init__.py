@@ -11,7 +11,7 @@ api = Api()
 
 from app.utils import AzureKeyVaultClient
 from app.auth.views import bp as auth_bp
-from app.todos.views import bp as todos_bp
+from app.todos.api.v2.views import bp as todos_bp
 
 def create_app(env):
     app = Flask(__name__)

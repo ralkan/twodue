@@ -2,11 +2,13 @@
 # TODO: Test pagination
 # TODO: Test sort/ordering
 
+API_PREFIX = '/api/v2'
+
 
 def _get_and_assert_todo_3(client):
     """ Function to test single todo with id 3
     """
-    response = client.get('/todos/3')
+    response = client.get(f'{API_PREFIX}/todos/3')
     assert response.status_code == 200
 
     assert 'content' in response.json
@@ -17,7 +19,7 @@ def _get_and_assert_todo_3(client):
 
 
 def test_list_todos(auth_client, user, todos):
-    response = auth_client.get('/todos/')
+    response = auth_client.get(f'{API_PREFIX}/todos/')
     assert response.status_code == 200
 
     # Check if there's a "todos" key in the response
@@ -44,13 +46,13 @@ def test_get_todo(auth_client, todos):
 
 
 def test_create_todo(auth_client, todos):
-    response = auth_client.get('/todos/')
+    response = auth_client.get(f'{API_PREFIX}/todos/')
     assert response.status_code == 200
 
     todos_count = response.json['total_records']
     assert todos_count == 3
 
-    post_response = auth_client.post('/todos/', json={'content': 'Bread', 'done': True})
+    post_response = auth_client.post(f'{API_PREFIX}/todos/', json={'content': 'Bread', 'done': True})
     assert post_response.status_code == 201
 
     # Check if we get the todo back in the response
@@ -63,7 +65,7 @@ def test_create_todo(auth_client, todos):
     # (This might change or be removed when we use uuid's)
     assert post_response.json['id'] == 5
 
-    response = auth_client.get('/todos/')
+    response = auth_client.get(f'{API_PREFIX}/todos/')
     assert response.status_code == 200
 
     todos_count = response.json['total_records']
@@ -75,7 +77,7 @@ def test_update_todo_content(auth_client, todos):
     _get_and_assert_todo_3(auth_client)
 
     # Only update "content"
-    response = auth_client.put('/todos/3', json={'content': 'Marshmallows'})
+    response = auth_client.put(f'{API_PREFIX}/todos/3', json={'content': 'Marshmallows'})
     assert response.status_code == 200
 
     assert 'content' in response.json
@@ -90,7 +92,7 @@ def test_update_todo_done(auth_client, todos):
     _get_and_assert_todo_3(auth_client)
 
     # Only update "done"
-    response = auth_client.put('/todos/3', json={'done': True})
+    response = auth_client.put(f'{API_PREFIX}/todos/3', json={'done': True})
     assert response.status_code == 200
 
     assert 'content' in response.json
@@ -104,7 +106,7 @@ def test_update_todo_done(auth_client, todos):
 # Negative flows
 
 def test_unauthorized_list_todos(client, todos):
-    response = client.get('/todos/')
+    response = client.get(f'{API_PREFIX}/todos/')
     assert response.status_code == 401
     # Make sure we have a message in the json
     assert 'message' in response.json
@@ -113,7 +115,7 @@ def test_unauthorized_list_todos(client, todos):
 
 
 def test_unauthorized_create_todo(client, todos):
-    response = client.post('/todos/', json={'content': 'Bread', 'done': True})
+    response = client.post(f'{API_PREFIX}/todos/', json={'content': 'Bread', 'done': True})
     assert response.status_code == 401
     # Make sure we have a message in the json
     assert 'message' in response.json
@@ -122,7 +124,7 @@ def test_unauthorized_create_todo(client, todos):
 
 
 def test_unauthorized_show_todo(client, todos):
-    response = client.get('/todos/3')
+    response = client.get(f'{API_PREFIX}/todos/3')
     assert response.status_code == 401
     # Make sure we have a message in the json
     assert 'message' in response.json
@@ -134,7 +136,7 @@ def test_cannot_update_todo_id(auth_client, todos):
     _get_and_assert_todo_3(auth_client)
 
     # Only update "id"
-    response = auth_client.put('/todos/3', json={'id': 888})
+    response = auth_client.put(f'{API_PREFIX}/todos/3', json={'id': 888})
     assert response.status_code == 422
     assert 'errors' in response.json
 
@@ -146,7 +148,7 @@ def test_cannot_update_todo_id_along_with_other_fields(auth_client, todos):
     _get_and_assert_todo_3(auth_client)
 
     # Try and update "id"
-    response = auth_client.put('/todos/3', json={'content': 'Marshmallow', 'id': 888})
+    response = auth_client.put(f'{API_PREFIX}/todos/3', json={'content': 'Marshmallow', 'id': 888})
     assert response.status_code == 422
     assert 'errors' in response.json
 
@@ -158,7 +160,7 @@ def test_cannot_update_todo_empty(auth_client, todos):
     _get_and_assert_todo_3(auth_client)
 
     # Try and update with empty body
-    response = auth_client.put('/todos/3', json={})
+    response = auth_client.put(f'{API_PREFIX}/todos/3', json={})
     assert response.status_code == 422
     assert 'errors' in response.json
 
