@@ -17,6 +17,8 @@ class Config:
     SSL_REDIRECT = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI') or \
+        'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 
     # Azure specific config
     # Set to False for assessment. Don't use this since it requires some setup in Azure
@@ -29,8 +31,6 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-        'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 
 
 class TestingConfig(Config):

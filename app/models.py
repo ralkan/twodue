@@ -22,7 +22,7 @@ class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100))
     email: Mapped[str] = mapped_column(String(100), unique=True)
-    password: Mapped[str] = mapped_column(String(100), unique=True)
+    password: Mapped[str] = mapped_column(String(), unique=True)
 
     todos: Mapped[List["Todo"]] = relationship(backref="user")
 
