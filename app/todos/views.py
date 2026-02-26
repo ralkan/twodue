@@ -38,7 +38,7 @@ class TodoListView(UserTodoVisibilityMixin, MethodView):
 
         # If we have a '?search=<str>' add a where clause for searching content
         if 'search' in parameters:
-            stmt = stmt.filter(Todo.content.like("{}%".format(parameters['search'])))
+            stmt = stmt.filter(Todo.content.ilike("%{}%".format(parameters['search'])))
 
         # Paginate the response (Maybe use flask-smorest pagination?)
         todos = db.paginate(stmt, page=page, per_page=current_app.config['DEFAULT_PAGINATION_COUNT'], error_out=False)

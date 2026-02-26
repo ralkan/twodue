@@ -97,12 +97,6 @@ flask db upgrade
 flask run --port 8000 --debug
 ```
 
-### Production
-
-```bash
-gunicorn -w 1 wsgi:app
-```
-
 ### API Documentation
 
 Once the app is running, Swagger UI is available at `/docs`.
